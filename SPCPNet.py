@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class LowRankUpdate(nn.Module):
+class SAM(nn.Module):
     """
     Steady
     """
@@ -18,7 +18,7 @@ class LowRankUpdate(nn.Module):
     def forward(self, x_minus_s):
         return self.net(x_minus_s)
 
-class SparseUpdate(nn.Module):
+class TEM(nn.Module):
     """
     Transient
     """
@@ -35,8 +35,8 @@ class SparseUpdate(nn.Module):
 class SPCPStage(nn.Module):
     def __init__(self, channels):
         super().__init__()
-        self.l_update = LowRankUpdate(channels)
-        self.s_update = SparseUpdate(channels)
+        self.l_update = SAM(channels)
+        self.s_update = TEM(channels)
 
     def forward(self, X, L_prev, S_prev):
         # 1. Update L_{k+1} 
@@ -62,7 +62,7 @@ class SPCPNet(nn.Module):
         
         fusion_dim = feature_dim * 3
         
-        self.attention = nn.Sequential(
+        self.arm = nn.Sequential(
             nn.AdaptiveAvgPool1d(1),
             nn.Conv1d(fusion_dim, fusion_dim // 4, kernel_size=1),
             nn.ReLU(),
@@ -86,38 +86,60 @@ class SPCPNet(nn.Module):
 
         L_k = torch.zeros_like(X_feat)
         S_k = torch.zeros_like(X_feat)
-        
+
         for stage in self.stages:
             L_k, S_k = stage(X_feat, L_k, S_k)
 
         fused_features = torch.cat([X_feat, L_k, S_k], dim=1)
-        attn_weights = self.attention(fused_features)
+        attn_weights = self.arm(fused_features)
         fused_features = fused_features * attn_weights
-        
+
         logits = self.classifier(fused_features)
 
         return logits, S_k, L_k, X_feat
-    
+
 class SPCPLoss(nn.Module):
-    def __init__(self, gamma=0.1, delta=0.5): 
+    def __init__(self, 
+                 gamma=0.3,     # reconstruction weight
+                 lambda_s=0.005, # sparsity weight
+                 beta_l=0.05    # low-rank weight
+                 ):
         super().__init__()
+
         self.gamma = gamma
-        self.delta = delta
+        self.lambda_s = lambda_s
+        self.beta_l = beta_l
+
         self.criterion_cls = nn.CrossEntropyLoss()
 
     def forward(self, logits, targets, S_k, L_k, X_feat):
+        # 1. Classification Loss
         loss_cls = self.criterion_cls(logits, targets)
 
-        diff = torch.abs(X_feat - (L_k + S_k))
-        margin_diff = F.relu(diff - self.delta)
+        # 2. Robust Reconstruction
+        recon = L_k + S_k
+        loss_recon = F.smooth_l1_loss(recon, X_feat)
 
-        loss_recon = torch.mean(margin_diff ** 2)
+        # 3. Sparsity
+        loss_sparse = torch.mean(torch.abs(S_k))
 
-        loss_total = loss_cls + self.gamma * loss_recon
-        
+        # 4. Low-rank proxy
+        diff_L = L_k[:, :, 1:] - L_k[:, :, :-1]
+        loss_lowrank = torch.mean(diff_L ** 2)
+
+        loss_total = (
+            loss_cls
+            + self.gamma * loss_recon
+            + self.lambda_s * loss_sparse
+            + self.beta_l * loss_lowrank
+        )
+
         return loss_total, loss_cls, loss_recon
 
 if __name__ == "__main__":
+    import time
+    import numpy as np
+    
     batch_size = 4
     seq_length = 128
     num_classes = 11
@@ -126,7 +148,6 @@ if __name__ == "__main__":
     model = SPCPNet(in_channels=2, num_stages=3, num_classes=num_classes, feature_dim=32)
     
     logits, S_k, L_k, X_feat = model(dummy_input)
-    
     print("Logits shape:", logits.shape)
     print("S_k shape:", S_k.shape)
     print("L_k shape:", L_k.shape)
