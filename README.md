@@ -1,5 +1,4 @@
-# SPCPNet: Understanding the Cocktail Party Effect in Wireless Signal Recognition
-
+# SPCPNet
 ---
 ## This is official code of paper "SPCPNet: Understanding the Cocktail Party Effect in Wireless Signal Recognition". 
 
