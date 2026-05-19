@@ -1,4 +1,4 @@
-# LISTEN Model
+# LISTEN
 ---
 ## This is official code of paper "LISTEN: Learn to Isolate Sources, Then Enable Nimble Wireless Signal Recognition". 
 
