@@ -4,11 +4,15 @@
 
 The motivation of our work: We draw inspiration from the cocktail party effect (top). In this cognitive process, the human brain first decouples mixed acoustic waves into distinct streams and then selectively recognizes the target information. Motivated by this mechanism, we design LISTEN (bottom) to mimic this biological paradigm for wireless signal recognition.
 
-![The motivation of our work: We draw inspiration from the cocktail party effect (top). In this cognitive process, the human brain first decouples mixed acoustic waves into distinct streams and then selectively recognizes the target information. Motivated by this mechanism, we design SPCPNet (bottom) to mimic this biological paradigm for wireless signal recognition.](motivation.png)
+![The motivation of our work: We draw inspiration from the cocktail party effect (top). In this cognitive process, the human brain first decouples mixed acoustic waves into distinct streams and then selectively recognizes the target information. Motivated by this mechanism, we design SPCPNet (bottom) to mimic this biological paradigm for wireless signal recognition.](figure/motivation.png)
 
-Illustration of the proposed SPCPNet.
+Illustration of the proposed LISTEN.
 
-![Illustration of the proposed SPCPNet.](method.png)
+![Illustration of the proposed LISTEN.](figure/method.png)
+
+Performance of LISTEN.
+
+![Illustration of the proposed SPCPNet.](figure/performance.png)
 
 If you want to use SPCPNet, you can follow:
 ```python
