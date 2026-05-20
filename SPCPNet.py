@@ -46,7 +46,7 @@ class SPCPStage(nn.Module):
         
         return L_k, S_k
 
-class SPCPNet(nn.Module):
+class LISTEN(nn.Module):
     def __init__(self, in_channels=2, num_stages=3, num_classes=11, feature_dim=32):
         super().__init__()
         self.num_stages = num_stages
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     num_classes = 11
     
     dummy_input = torch.randn(batch_size, 2, seq_length)
-    model = SPCPNet(in_channels=2, num_stages=3, num_classes=num_classes, feature_dim=32)
+    model = LISTEN(in_channels=2, num_stages=3, num_classes=num_classes, feature_dim=32)
     
     logits, S_k, L_k, X_feat = model(dummy_input)
     print("Logits shape:", logits.shape)
