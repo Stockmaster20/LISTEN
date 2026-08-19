@@ -40,7 +40,7 @@ set_random_seed(2026)
 
 start = time.time()
 
-dataset = '/media/zxr/DATA1/SMC/2016A/'
+dataset = './SMC/2016A/'
 
 X_train = np.load(dataset + 'X_train.npy') 
 X_test = np.load(dataset + 'X_test.npy')
