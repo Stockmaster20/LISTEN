@@ -79,8 +79,6 @@ print("load dataset time: {:.3f} s".format(end - start))
 model = LISTEN(in_channels=2, num_stages=3, num_classes=num_class, feature_dim=32).to(device=device)
 
 for name, param in model.named_parameters():
-    if 'rsna_embed' in name:
-        continue
     if 'weight' in name and param.dim() >= 2:
         nn.init.kaiming_normal_(param.data)
         
@@ -181,7 +179,7 @@ plt.subplot(121)
 plt.plot(epochs, train_losses, color = 'b')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
-# 绘制 acc 曲线
+
 plt.subplot(122)
 plt.plot(epochs, train_accs, color = 'r')
 plt.xlabel('Epoch')
