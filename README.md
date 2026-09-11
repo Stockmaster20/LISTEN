@@ -17,7 +17,3 @@ If you want to use LISTEN, you can follow:
     logits, S_k, L_k, X_feat = model(dummy_input)
     ...
 ```
-
-Performance of LISTEN.
-
-![Illustration of the proposed SPCPNet.](figure/performance.png)
