@@ -10,10 +10,6 @@ Illustration of the proposed LISTEN.
 
 ![Illustration of the proposed LISTEN.](figure/method.png)
 
-Performance of LISTEN.
-
-![Illustration of the proposed SPCPNet.](figure/performance.png)
-
 If you want to use LISTEN, you can follow:
 ```python
     dummy_input = torch.randn(batch_size, 2, seq_length)
