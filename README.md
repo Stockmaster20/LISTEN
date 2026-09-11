@@ -16,3 +16,8 @@ If you want to use LISTEN, you can follow:
     model = LISTEN(in_channels=2, num_stages=3, num_classes=num_classes, feature_dim=32)
     logits, S_k, L_k, X_feat = model(dummy_input)
     ...
+```
+
+Performance of LISTEN.
+
+![Illustration of the proposed SPCPNet.](figure/performance.png)
